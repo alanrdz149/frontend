@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+
+
+    <style type="text/css">
+      img {
+        border-radius: 150px; }
+      </style>
+    <title>Subir Usuario Biblioteca</title>
+
+</head>
+<header id="header">
+  </header>
+  <hr>
+<body>
+       
+  <div class="container-fluid">
+    
+      <div class="row h-100 d-flex justify-content-center">
+          <div class="col-md-4 mt-5">
+          <center> <h1>Alta Usuario</h1><hr>
+          <legend>Seleccione la imagen del usuario</legend>
+          <div id="file-preview-zone" ></div><br>
+          </center>
+
+
+          <form id="datos" enctype="multipart/form-data">
+          <p id="error" style="color: red; display: none;"></p>
+        <input id="file-upload" type="file" class="form-control" name="archivo" accept="image/*"><br>
+        <button type="submit" class="btn btn-info btn-block">Enviar</button><br>
+        <a href="listar_usuarios.html"><button type="button" id="omitir" onclick='alert("Usuario agregado exitosamente")' class="btn btn-info btn-block">Omitir</button></a>
+
+        </form>
+    </div>
+      </div>
+  </div>
+
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.4.2/handlebars.min.js"></script> <script src="templatesCompiled.js"></script> 
+
+
+  <script type="text/javascript">
+
+    $('#datos').on('submit',function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        $.ajax({
+            type: 'PUT',
+            url: 'https://librerialan.herokuapp.com/upload/usuario/'+window.localStorage.getItem('id'),
+            data: new FormData(this),
+            processData:false,
+            contentType:false,
+            beforeSend:function(request){
+              request.setRequestHeader("token", window.localStorage.getItem('token'));
+            },
+            success: function(resp){
+              alert("Usuario agregado exitosamente")
+              window.location.href='listar_usuarios.html'
+            },
+
+            error: function (err) {
+              $('#error').text(err.responseJSON.err.message);
+              $('#error').show();
+              if(err.responseJSON.err.message == "jwt expired"){
+            alert("La sesión a expirado")
+            localStorage.clear();
+            window.location.href='index.html'
+          }
+
+
+            }
+        });
+    });
+
+
+    $('input').on('focus', function (e) {
+        $('#error').hide();
+    });
+
+
+
+
+function readFile(input) {
+if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        var filePreview = document.createElement('img');
+        filePreview.id = 'file-preview';
+        //e.target.result contents the base64 data from the image uploaded
+        filePreview.src = e.target.result;
+        var previewZone = document.getElementById('file-preview-zone');
+        previewZone.appendChild(filePreview);
+    }
+    reader.readAsDataURL(input.files[0]);
+}
+}
+var fileUpload = document.getElementById('file-upload');
+fileUpload.onchange = function (e) {
+readFile(e.srcElement);
+}
+</script>
+
+</body>
+<!-- Footer -->
+<footer style="position: fixed; text-align: center; bottom: 0%; width: 100%; background-color: cadetblue;" class="page-footer font-small blue">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2019 Proyecto de:Alan Enrique
+    </div>
+    <!-- Copyright -->
+  
+  </footer>
+  <!-- Footer -->
+</html>
